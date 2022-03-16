@@ -6,7 +6,13 @@ const io = require("socket.io")(http, { cors: { origin: "*", methods: ["GET", "P
 const registerRoomHandlers = require("./roomHandlers");
 
 // Routes
-app.get("/", (req, res, next) => res.sendFile("./index.html", { root: __dirname }));
+app.get("/", async (req, res, next) => {
+	return res.json({ message: "Welcome" });
+});
+
+app.get("/company/:companySlug/room/:roomUniqueName", (req, res, next) =>
+	res.sendFile("./index.html", { root: __dirname })
+);
 
 // Socket Handlers
 io.on("connection", (socket) => {
