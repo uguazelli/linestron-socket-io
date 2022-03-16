@@ -21,6 +21,7 @@ io.on("connection_error", (err) => {
 });
 
 // Start App
-http.listen(3000, function () {
+const PORT = process.env.PORT || 3000;
+http.listen(PORT, function () {
 	console.log("listening on *:3000");
 });
