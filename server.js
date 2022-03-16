@@ -1,20 +1,26 @@
-"use strict";
+// Express JS
+const app = require("express")();
+// Socket IO
+const http = require("http").Server(app);
+const io = require("socket.io")(http, { cors: { origin: "*", methods: ["GET", "POST"] } });
+const registerRoomHandlers = require("./roomHandlers");
 
-const express = require("express");
-const socketIO = require("socket.io");
+// Routes
+app.get("/", (req, res, next) => res.sendFile("./index.html", { root: __dirname }));
 
-const PORT = process.env.PORT || 3000;
-const INDEX = "/index.html";
-
-const server = express()
-	.use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-	.listen(PORT, () => console.log(`Listening on ${PORT}`));
-
-const io = socketIO(server);
-
+// Socket Handlers
 io.on("connection", (socket) => {
-	console.log("Client connected");
-	socket.on("disconnect", () => console.log("Client disconnected!"));
+	registerRoomHandlers(io, socket);
+});
+// Socket error handler
+io.on("connection_error", (err) => {
+	console.log(err.req); // the request object
+	console.log(err.code); // the error code, for example 1
+	console.log(err.message); // the error message, for example "Session ID unknown"
+	console.log(err.context); // some additional error context
 });
 
-setInterval(() => io.emit("time", new Date().toTimeString()), 1000);
+// Start App
+http.listen(3000, function () {
+	console.log("listening on *:3000");
+});

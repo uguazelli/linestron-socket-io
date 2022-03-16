@@ -1,5 +1,4 @@
-<html>
-
+<!-- <html>
 <head>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -15,6 +14,128 @@
 
 <body>
     <p id="server-time"></p>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Next</title>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    const socket = io();
+
+    const getMinutesBetweenDates = (startDate, endDate) => {
+
+        let currentDate = { "date_created": startDate }
+        let currentDateParse = new Date(parseInt(currentDate.date_created));
+
+        let previousDate = { "date_created": endDate }
+        let previousDateParse = new Date(parseInt(previousDate.date_created));
+
+        let diff = currentDateParse - previousDateParse;
+        let minutes = Math.ceil(diff / 60000); //round up
+
+        return minutes
+    };
+
+    const getRoom = () => {
+        const url = window.location.href;
+        const splittedUrl = url.split("/");
+        const companyName = splittedUrl.findIndex((value) => value === "company") + 1
+        const roomName = splittedUrl.findIndex((value) => value === "room") + 1
+        const room = splittedUrl[companyName] + "_" + splittedUrl[roomName]
+        return room
+    }
+
+    socket.emit("connectToRoom", getRoom());
+
+    socket.on(getRoom(), function (msg) {
+        document.getElementById('number').innerHTML = msg.number;
+        const averageTime = getMinutesBetweenDates(msg.currentTime, msg.previousTime)
+        document.getElementById('minutes').innerHTML = averageTime;
+    });
+
+
+
+
+</script>
+
+<style>
+    html,
+    body {
+        height: 100%;
+    }
+
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+        margin: 10px;
+        width: 70%;
+        max-width: 480px;
+        height: 70%;
+        max-height: 500%;
+        border-radius: 5px;
+        -webkit-box-shadow: 3px 3px 5px 5px rgba(68, 67, 67, 0.34);
+        box-shadow: 3px 3px 5px 5px rgba(68, 67, 67, 0.34);
+    }
+
+    .card-title {
+        flex: 1;
+    }
+
+    .card-body {
+        flex: 3;
+    }
+
+    .card-minutes {
+        flex: 3;
+    }
+
+    .card-footer {
+        flex: 1;
+    }
+
+    .card-header {
+        flex: 1;
+        color: #fff;
+        background-color: black;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        text-align: center;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>Welcome</h1>
+            </div>
+            <div class="card-title" style="text-align: center;">
+                <h3>Your Number is: 14</h3>
+            </div>
+            <div class="card-body" style="text-align: center;">
+                <h2>Actual number is </h2>
+                <h2><span id="number">0</span></h2>
+            </div>
+            <div class="card-minutes" style="text-align: center;">
+                <h2>Your expected waiting time is </h2>
+                <h2><span id="minutes">0</span> minutes</h2>
+            </div>
+            <div class="card-footer" style="text-align: center;">linestron.com</div>
+        </div>
+    </div>
 </body>
 
 </html>
