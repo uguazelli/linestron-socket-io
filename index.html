@@ -1,141 +1,233 @@
-<!-- <html>
-<head>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        let socket = io();
-        let el;
-
-        socket.on('time', (timeString) => {
-            el = document.getElementById('server-time');
-            el.innerHTML = 'Server time: ' + timeString;
-        });
-    </script>
-</head>
-
-<body>
-    <p id="server-time"></p>
-</body>
-</html> -->
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Next</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
+    <title>Document</title>
 </head>
-<script src="/socket.io/socket.io.js"></script>
-
-<script>
-    const socket = io();
-
-    const getMinutesBetweenDates = (startDate, endDate) => {
-
-        let currentDate = { "date_created": startDate }
-        let currentDateParse = new Date(parseInt(currentDate.date_created));
-
-        let previousDate = { "date_created": endDate }
-        let previousDateParse = new Date(parseInt(previousDate.date_created));
-
-        let diff = currentDateParse - previousDateParse;
-        let minutes = Math.ceil(diff / 60000); //round up
-
-        return minutes
-    };
-
-    const getRoom = () => {
-        const url = window.location.href;
-        const splittedUrl = url.split("/");
-        const companyName = splittedUrl.findIndex((value) => value === "company") + 1
-        const roomName = splittedUrl.findIndex((value) => value === "room") + 1
-        const room = splittedUrl[companyName] + "_" + splittedUrl[roomName]
-        return room
-    }
-
-    socket.emit("connectToRoom", getRoom());
-
-    socket.on(getRoom(), function (msg) {
-        document.getElementById('number').innerHTML = msg.number;
-        const averageTime = getMinutesBetweenDates(msg.currentTime, msg.previousTime)
-        document.getElementById('minutes').innerHTML = averageTime;
-    });
-
-
-
-
-</script>
-
-<style>
-    html,
-    body {
-        height: 100%;
-    }
-
-    .container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-    }
-
-    .card {
-        display: flex;
-        flex-direction: column;
-        margin: 10px;
-        width: 70%;
-        max-width: 480px;
-        height: 70%;
-        max-height: 500%;
-        border-radius: 5px;
-        -webkit-box-shadow: 3px 3px 5px 5px rgba(68, 67, 67, 0.34);
-        box-shadow: 3px 3px 5px 5px rgba(68, 67, 67, 0.34);
-    }
-
-    .card-title {
-        flex: 1;
-    }
-
-    .card-body {
-        flex: 3;
-    }
-
-    .card-minutes {
-        flex: 3;
-    }
-
-    .card-footer {
-        flex: 1;
-    }
-
-    .card-header {
-        flex: 1;
-        color: #fff;
-        background-color: black;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        text-align: center;
-    }
-</style>
 
 <body>
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+            font-family: 'Roboto', sans-serif;
+
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 768px;
+            height: 90%;
+            max-height: 1024px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            flex: 1;
+            width: 100%;
+            font-weight: bolder;
+            text-align: center;
+        }
+
+        .number {
+            flex: 3;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .numberHead {
+            height: 20%;
+            width: 90%;
+            background-color: #3d1c42;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .numberBody {
+            height: 70%;
+            width: 90%;
+            background-color: #8a5592;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .current {
+            flex: 3;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .currentHead {
+            height: 30%;
+            width: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #3d1c42;
+        }
+
+        .currentBody {
+            height: 40%;
+            width: 90%;
+            background-color: #188f49;
+            border-radius: 50px;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .time {
+            flex: 3;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .timeTitle {
+            background-color: #8a5592;
+            color: #fff;
+            width: 60%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .timeValue {
+            background-color: red;
+            color: #fff;
+            width: 30%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .footer {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+        }
+    </style>
     <div class="container">
         <div class="card">
-            <div class="card-header">
-                <h1>Welcome</h1>
+            <div class="title">
+                <h1>Company Name</h1>
             </div>
-            <div class="card-title" style="text-align: center;">
-                <h3>Your Number is: 14</h3>
+            <div class="number">
+                <div class="numberHead">
+                    <h2>Your Number</h2>
+                </div>
+                <div class="numberBody">
+                    <h2 id="number">A402</h2>
+                </div>
             </div>
-            <div class="card-body" style="text-align: center;">
-                <h2>Actual number is </h2>
-                <h2><span id="number">0</span></h2>
+            <div class="current">
+                <hr style="border: 9px solid #3d1c42; border-radius: 5px; width: 90%; ">
+                <div class="currentHead">
+                    <h2>Current Number</h2>
+                </div>
+                <div class="currentBody">
+                    <h2>A398</h2>
+                </div>
             </div>
-            <div class="card-minutes" style="text-align: center;">
-                <h2>Your expected waiting time is </h2>
-                <h2><span id="minutes">0</span> minutes</h2>
+            <div class="time">
+                <div class="timeValue">
+                    <h3><span id="minutes">5</span> <br> minutes</h3>
+                </div>
+                <div class="timeTitle">
+                    <h3>Is the expected <br> waiting time</h3>
+                </div>
+
             </div>
-            <div class="card-footer" style="text-align: center;">linestron.com</div>
+            <div class="footer">
+                <p>LINESTRON
+                    <br>
+                    Lines management system
+                    <br>
+                    www.linestron.com
+                </p>
+
+            </div>
         </div>
     </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        const socket = io();
+
+        const getMinutesBetweenDates = (startDate, endDate) => {
+
+            let currentDate = { "date_created": startDate }
+            let currentDateParse = new Date(parseInt(currentDate.date_created));
+
+            let previousDate = { "date_created": endDate }
+            let previousDateParse = new Date(parseInt(previousDate.date_created));
+
+            let diff = currentDateParse - previousDateParse;
+            let minutes = Math.ceil(diff / 60000); //round up
+
+            return minutes
+        };
+
+        const getRoom = () => {
+            const url = window.location.href;
+            const splittedUrl = url.split("/");
+            const companyName = splittedUrl.findIndex((value) => value === "company") + 1
+            const roomName = splittedUrl.findIndex((value) => value === "room") + 1
+            const room = splittedUrl[companyName] + "_" + splittedUrl[roomName]
+            return room
+        }
+
+        socket.emit("connectToRoom", getRoom());
+
+        socket.on(getRoom(), function (msg) {
+            document.getElementById('number').innerHTML = msg.number;
+            const averageTime = getMinutesBetweenDates(msg.currentTime, msg.previousTime)
+            document.getElementById('minutes').innerHTML = averageTime;
+        });
+
+    </script>
+
 </body>
 
 </html>
