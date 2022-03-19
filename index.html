@@ -156,7 +156,7 @@
                     <h2>Your Number</h2>
                 </div>
                 <div class="numberBody">
-                    <h2 id="number">A402</h2>
+                    <h2 id="clientNumber"></h2>
                 </div>
             </div>
             <div class="current">
@@ -165,7 +165,7 @@
                     <h2>Current Number</h2>
                 </div>
                 <div class="currentBody">
-                    <h2>A398</h2>
+                    <h2 id="number">A398</h2>
                 </div>
             </div>
             <div class="time">
@@ -225,6 +225,12 @@
             const averageTime = getMinutesBetweenDates(msg.currentTime, msg.previousTime)
             document.getElementById('minutes').innerHTML = averageTime;
         });
+        let company_room = getRoom().split("_");
+        let url = `http://localhost:3000/room/sala2/company/${company_room[0]}/number`
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => document.getElementById('clientNumber').innerHTML = data.roomLastNumber);
 
     </script>
 
