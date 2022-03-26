@@ -6,11 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-
     <title>Linestron</title>
-</head>
-
-<body>
     <style>
         html,
         body {
@@ -152,8 +148,9 @@
             text-align: center;
         }
     </style>
+</head>
 
-
+<body>
     <div class="container">
         <div class="card">
             <div class="title">
@@ -229,24 +226,45 @@
             const averageTime = getMinutesBetweenDates(msg.currentTime, msg.previousTime)
             document.getElementById('minutes').innerHTML = averageTime;
         });
-        let company_room = getRoom().split("_");
-        let url = `http://localhost:3000/room/${company_room[1]}/company/${company_room[0]}/number`
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                document.title = data.companyName
-                document.getElementById('companyName').innerHTML = data.companyName
-                document.getElementById('clientNumber').innerHTML = `${data.prefix}${data.roomLastNumber}`
-            });
+        if (sessionStorage.getItem("companySaved")) {
+            let savedTime = sessionStorage.getItem("savedTime")
+            let isNumstored = confirm(`You already got a number at ${savedTime} \nDO YOU WANT A NEW NUMBER?`);
+            if (isNumstored) {
+                sessionStorage.clear();
+            }
+        }
 
-        let lastNumberUrl = `http://localhost:3000/room/${company_room[1]}/current`
 
-        fetch(lastNumberUrl)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('number').innerHTML = data.prefix + data.currentNumber
-            });
+        const getNumbers = async () => {
+            let company_room = getRoom().split("_");
+
+            let com;
+            if (sessionStorage.getItem("companySaved")) {
+                // Restore the contents of the text field
+                com = JSON.parse(sessionStorage.getItem("companySaved"));
+
+            } else {
+                //API call
+                let comUrl = `http://localhost:3000/room/${company_room[1]}/company/${company_room[0]}/number`
+                const comResponse = await fetch(comUrl);
+                com = await comResponse.json();
+                sessionStorage.setItem("companySaved", JSON.stringify(com));
+                const now = new Date().toUTCString()
+                sessionStorage.setItem("savedTime", now);
+            }
+
+
+            document.title = com.companyName
+            document.getElementById('companyName').innerHTML = com.companyName
+            document.getElementById('clientNumber').innerHTML = `${com.prefix}${com.roomLastNumber}`
+
+            let lastNumberUrl = `http://localhost:3000/room/${company_room[1]}/current`
+            const numResponse = await fetch(lastNumberUrl);
+            const num = await numResponse.json();
+            document.getElementById('number').innerHTML = num.prefix + num.currentNumber
+        }
+        getNumbers()
 
 
     </script>
