@@ -237,14 +237,18 @@
             .then(data => {
                 document.title = data.companyName
                 document.getElementById('companyName').innerHTML = data.companyName
-                document.getElementById('clientNumber').innerHTML = data.roomLastNumber
+                document.getElementById('clientNumber').innerHTML = `${data.prefix}${data.roomLastNumber}`
             });
 
         let lastNumberUrl = `http://localhost:3000/room/${company_room[1]}/current`
 
         fetch(lastNumberUrl)
             .then(response => response.json())
-            .then(data => document.getElementById('number').innerHTML = data.currentNumber);
+            .then(data => {
+                document.getElementById('number').innerHTML = data.prefix + data.currentNumber
+            });
+
+
     </script>
 
 </body>
