@@ -1,10 +1,17 @@
-// Express JS
-const app = require("express")();
+// server.js
+const express = require("express");
+// Define Express App
+const app = express();
 const bodyParser = require("body-parser");
 // Socket IO
 const http = require("http").Server(app);
 const io = require("socket.io")(http, { cors: { origin: "*", methods: ["GET", "POST"] } });
 const registerRoomHandlers = require("./roomHandlers");
+
+// Template
+app.set("view engine", "ejs");
+
+app.use(express.static(__dirname + "/public"));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,8 +31,10 @@ app.post("/lastnumber", async (req, res, next) => {
 	return res.json({ ok: true });
 });
 
-app.get("/company/:companySlug/room/:roomUniqueName", (req, res, next) =>
-	res.sendFile("./index.html", { root: __dirname })
+app.get(
+	"/company/:companySlug/room/:roomUniqueName",
+	(req, res, next) => res.render("index", { message: "" })
+	// res.sendFile("./index.html", { root: __dirname })
 );
 
 // Socket Handlers

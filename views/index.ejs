@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <title>Linestron</title>
+
     <style>
         html,
         body {
@@ -49,7 +50,7 @@
         }
 
         .number {
-            flex: 3;
+            flex: 2;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -78,7 +79,7 @@
         }
 
         .current {
-            flex: 3;
+            flex: 2;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -87,7 +88,7 @@
         }
 
         .currentHead {
-            height: 30%;
+            height: 20%;
             width: 90%;
             display: flex;
             justify-content: center;
@@ -136,6 +137,16 @@
             align-items: center;
             text-align: center;
             border-right: 5px solid #fff;
+        }
+
+        .phone {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
         }
 
         .footer {
@@ -208,9 +219,11 @@
             cursor: pointer;
         }
     </style>
+
 </head>
 
 <body>
+
 
     <div id="modalNumber" class="modal">
         <div class="modal-content">
@@ -245,7 +258,7 @@
                 </div>
             </div>
             <div class="current">
-                <hr style="border: 5px solid #219ebc;  width: 88%; ">
+                <!-- <hr style="border: 5px solid #219ebc;  width: 88%; "> -->
                 <div class="currentHead">
                     <h2>Current Number</h2>
                 </div>
@@ -263,10 +276,13 @@
             </div>
             <div class="phone">
                 <div class="phoneText">
-                    <h3>Receive SMS notifications</h3>
+                    <h4>Receive SMS notifications</h4>
                 </div>
                 <div class="phoneNumber">
-                    <h3>+14382265956 change</h3>
+                    <h4>
+                        <span id="setPhone"></span>
+                        <a href="javascript:void(0);" onclick="toggleModalPhone()">Change Number</a>
+                    </h4>
                 </div>
             </div>
             <div class="footer">
@@ -337,6 +353,7 @@
                 sessionStorage.setItem("companySaved", JSON.stringify(com));
                 const now = new Date().toUTCString()
                 sessionStorage.setItem("savedTime", now);
+                sessionStorage.setItem("numberNoPrefix", `${com.roomLastNumber}`);
                 sessionStorage.setItem("number", `${com.prefix}${com.roomLastNumber}`);
             }
 
@@ -373,13 +390,28 @@
             setRoomValues();
         }
 
-        const setPhone = () => {
+        const setPhone = async () => {
+            let savedNumber = sessionStorage.getItem("numberNoPrefix");
+            const phone = document.getElementById("phoneNumber").value
+            let company_room = getRoomNames().split("_");
+            const id = `${company_room[0]}_${company_room[1]}_${savedNumber}`;
+            let phoneUrl = `http://localhost:3000/room/client/phone`;
+
+            const response = await fetch(phoneUrl, {
+                method: "POST",
+                headers: { Accept: "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({ id: id, phone: phone }),
+            });
+            document.getElementById("setPhone").innerHTML = phone
             toggleModalPhone()
         }
 
+
+        // const changePhoneNumber = () => {
+        //     alert()
+        // }
+
         const skypPhone = () => toggleModalPhone()
-
-
 
         const element = document.getElementById('phoneNumber');
         const maskOptions = {
